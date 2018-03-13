@@ -1,61 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.Provisioning">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="100dp"
-            android:id="@+id/PeripheralTextView"
-            android:scrollbars="vertical"
-            android:maxLines="30" />
+    <TextView
+        android:id="@+id/PeripheralTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/scan"
+        android:maxLines="30"
+        android:scrollbars="vertical" />
 
-        <Switch
-            android:id="@+id/scan"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:text="Scan" />
+    <Switch
+        android:id="@+id/scan"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="Scan" />
 
-        <Button
-            android:id="@+id/testing"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_alignBaseline="@+id/receive"
-            android:layout_alignBottom="@+id/receive"
-            android:layout_centerHorizontal="true"
-            android:text="Send" />
 
-        <Button
-            android:id="@+id/topology"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/testing"
-            android:layout_marginStart="26dp"
-            android:textSize="9dp"
-            android:layout_toEndOf="@+id/testing"
-            android:text="Topology" />
 
-        <Button
-            android:id="@+id/receive"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="14dp"
-            android:text="Receive" />
-
-        <TextView
-            android:id="@+id/data"
-            android:layout_width="200dp"
-            android:layout_height="30dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/testing"
-            android:text="Nothing..." />
-
-    </RelativeLayout>
+</RelativeLayout>

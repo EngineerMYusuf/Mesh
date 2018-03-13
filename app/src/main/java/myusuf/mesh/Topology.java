@@ -84,7 +84,8 @@ public class Topology extends AppCompatActivity {
     }
 
     private void startNodes(int node) {
-        Intent intent = new Intent(this, NodeSpecs.class);
+        // ToDo consider which type of node is pressed and send to appropriate activity
+        Intent intent = new Intent(this, tempNode.class);
         intent.putExtra("WHICH_NODE", node);
         intent.putExtra("NODE_DATA",myNodeData);
         intent.putExtra("NODE_TYPE",myNodeType);
