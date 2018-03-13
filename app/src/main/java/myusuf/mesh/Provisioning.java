@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -202,10 +203,39 @@ public class Provisioning extends AppCompatActivity {
     }
     private void launchActivity() {
 
-        String data = "101100101001000";
+        String data = "00110011" + "00010001";   // This means 0th node is connected to 2,3,6,7 and 3,7 is strong
+        data = data + "00001100" + "00000100";   // 1
+        data = data + "10000000" + "00000000";   // 2
+        data = data + "10000100" + "10000000";   // 3
+        data = data + "01000000" + "00000000";   // 4
+        data = data + "01010010" + "01000010";   // 5
+        data = data + "10000000" + "00000100";   // 6
+        data = data + "10000000" + "10000000";   // 7
+        int kn = 8;
         Log.d("progress", "Launching Topology");
         Intent intent = new Intent(this, Topology.class);
+        String[] datas = new String[kn];
+        datas[0] = "It's soooo hot here";
+        datas[1] = "ZZZzzzzzz.....";
+        datas[2] = "Huh?!  Who's there?";
+        datas[3] = "Dude dude dude. I just saw this lamp stare at me";
+        datas[4] = "See, I can touch my nose with my tongue";
+        datas[5] = "Maaaan. The government always controls the media maaaan.";
+        datas[6] = "Dude it feels like we are just puppets.";
+        datas[7] = "Darling you looook peeerfect tonight Na Na Naaaa.";
+        int[] types = new int[kn];
+        types[0] = 1;
+        types[1] = 2;
+        types[2] = 5;
+        types[3] = 1;
+        types[4] = 4;
+        types[5] = 4;
+        types[6] = 3;
+        types[7] = 99;
+        intent.putExtra("NODE_DATA",datas);
+        intent.putExtra("NODE_TYPE",types);
         intent.putExtra("CONNECTION_TABLE", data);
+        intent.putExtra("KN",kn);
         startActivity(intent);
         Log.d("progress", "Skipped");
     }
