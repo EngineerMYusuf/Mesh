@@ -19,31 +19,26 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
-public class tempNode extends AppCompatActivity {
+public class motorNode extends AppCompatActivity {
 
-    TextView peripheralTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_temp_node);
+        setContentView(R.layout.activity_motor_node);
 
         int num = 0;
         int myType = 0;
-        String myData;
         num = getIntent().getIntExtra("WHICH_NODE",num);
-        myType= getIntent().getIntExtra("NODE_TYPE",myType);
-        myData= getIntent().getStringExtra("NODE_DATA");
-        TextView name = (TextView) findViewById(R.id.tempnodeID);
-        TextView type = (TextView) findViewById(R.id.tempnodeType);
-        TextView info = (TextView) findViewById(R.id.tempnodeData);
+        TextView name = (TextView) findViewById(R.id.motornodeID);
+        TextView type = (TextView) findViewById(R.id.motornodeType);
+        TextView info = (TextView) findViewById(R.id.motornodeData);
         Log.d("progress","You want node: " + num );
         name.setText(String.valueOf(num));
         type.setText(String.valueOf(myType));
-        info.setText(myData);
 
         // Test Button
-        Button send = (Button) findViewById(R.id.tempSend);
+        Button send = (Button) findViewById(R.id.motorSend);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,9 +50,8 @@ public class tempNode extends AppCompatActivity {
             }
         });
 
-
         // Test Button
-        Button receive = (Button) findViewById(R.id.tempReceive);
+        Button receive = (Button) findViewById(R.id.motorReceive);
         receive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +64,7 @@ public class tempNode extends AppCompatActivity {
     }
 
     private void sendData(String data) throws MalformedURLException, ProtocolException, IOException {
+        // My code
         String url = "http://192.168.137.5/user.txt";
 
         URL obj = new URL(url);

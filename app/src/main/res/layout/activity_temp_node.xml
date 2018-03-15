@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.tempNode">
+
         <Button
-            android:id="@+id/testing"
+            android:id="@+id/tempSend"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
@@ -14,30 +15,17 @@
             android:text="Send"
             tools:layout_editor_absoluteX="200dp"
             tools:layout_editor_absoluteY="527dp" />
-
         <Button
-            android:id="@+id/topology"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_alignBaseline="@+id/receive"
-            android:layout_alignBottom="@+id/receive"
-            android:layout_toEndOf="@+id/receive"
-            android:text="Topology"
-            android:textSize="9dp"
-            tools:layout_editor_absoluteX="100dp"
-            tools:layout_editor_absoluteY="527dp" />
-
-        <Button
-            android:id="@+id/receive"
+            android:id="@+id/tempReceive"
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
-            android:layout_toEndOf="@+id/testing"
+            android:layout_toEndOf="@+id/tempSend"
             android:text="Receive"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="527dp" />
         <TextView
-            android:id="@+id/nodeID"
+            android:id="@+id/tempnodeID"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
@@ -50,19 +38,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/nodeID"
-            android:id="@+id/nodeData"
+            android:layout_below="@+id/tempnodeID"
+            android:id="@+id/tempnodeData"
             android:textSize="50dp"
             android:text="Nothing"/>
 
 
         <TextView
-            android:id="@+id/nodeType"
+            android:id="@+id/tempnodeType"
             android:layout_width="match_parent"
             android:layout_above="@+id/nodeData"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/nodeID"
+            android:layout_toEndOf="@+id/tempnodeID"
             android:text="Nothing"
             android:textSize="50dp"
             android:gravity="end"/>
@@ -74,7 +62,7 @@
             android:layout_above="@+id/nodeData"
             android:layout_marginBottom="23dp"
             android:layout_marginEnd="23dp"
-            android:layout_toStartOf="@+id/nodeType"
+            android:layout_toStartOf="@+id/tempnodeType"
             android:scaleX="2"
             android:scaleY="2"
             app:srcCompat="@drawable/transnode" />

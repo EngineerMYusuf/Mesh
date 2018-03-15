@@ -5,15 +5,14 @@
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.Provisioning">
 
-    <TextView
-        android:id="@+id/PeripheralTextView"
+    <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/scan"
-        android:maxLines="30"
-        android:scrollbars="vertical" />
+        android:layout_below="@+id/scan">
+
+    </ListView>
 
     <Switch
         android:id="@+id/scan"

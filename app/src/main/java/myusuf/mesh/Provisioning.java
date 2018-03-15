@@ -15,20 +15,47 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class Provisioning extends AppCompatActivity {
+    private final static int REQUEST_ENABLE_BT = 1;
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
-    private final static int REQUEST_ENABLE_BT = 1;
-    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    ListView devicesList;
+    ArrayAdapter<String> adapter;
+    ArrayList<String> myList;
 
-    TextView peripheralTextView;
+    private ScanCallback leScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            if (!(result.getDevice().getName() == null)) {
+                Log.d("progress", "Scanned and found: " + result.getDevice().getName() + " @ " + result.getDevice().getAddress());
+                for (int i = 0; i < myList.size() + 1; i++) {
+                    if(i == myList.size()){
+                        Log.d("progress", "Found new Device called: " + result.getDevice().getAddress());
+                        addItemToList(result.getDevice().getAddress());
+                        break;
+                    }
+                    if (result.getDevice().getAddress().equals(myList.get(i))) {
+                        Log.d("progress", "I saw you before Mr. " + result.getDevice().getAddress());
+                        break;
+                    }
+                }
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +65,33 @@ public class Provisioning extends AppCompatActivity {
         setContentView(R.layout.activity_provisioning);
 
 
+        devicesList = findViewById(android.R.id.list);
+        myList = new ArrayList<String>();
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
+        myList.add("ZERO");
 
-
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, myList);
+        devicesList.setAdapter(adapter);
         // BLE Stuff
 
-        btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
-        btScanner = btAdapter.getBluetoothLeScanner();
+        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+
 
         if (btManager.getAdapter() != null && !btManager.getAdapter().isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent,REQUEST_ENABLE_BT);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
 
         btAdapter = btManager.getAdapter();
-
+        btScanner = btAdapter.getBluetoothLeScanner();
         // Make sure we have access coarse location enabled, if not, prompt the user to enable it
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -69,7 +109,7 @@ public class Provisioning extends AppCompatActivity {
 
         // Scan Switch
         Switch scan = (Switch) findViewById(R.id.scan);
-        boolean scanState = scan.isChecked();
+        //boolean scanState = scan.isChecked();
 
         scan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -81,21 +121,16 @@ public class Provisioning extends AppCompatActivity {
                 }
             }
         });
-    }
-    private ScanCallback leScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            Log.d("progress", "Scan Result");
 
-            peripheralTextView.append("Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + "\n");
-            Log.d("progress", "Scanned and found: " + result.getDevice().getName() + " @ " + result.getDevice().getAddress());
-            // auto scroll for text view
-            final int scrollAmount = peripheralTextView.getLayout().getLineTop(peripheralTextView.getLineCount()) - peripheralTextView.getHeight();
-            // if there is no need to scroll, scrollAmount will be <=0
-            if (scrollAmount > 0)
-                peripheralTextView.scrollTo(0, scrollAmount);
-        }
-    };
+        devicesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                    int position, long id) {
+                Log.d("progress", "You have clicked the ID: " + id + " Position: " + position);
+            }
+        });
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -122,9 +157,9 @@ public class Provisioning extends AppCompatActivity {
             }
         }
     }
+
     public void startScanning() {
         Log.d("progress", "Start Scanning");
-        peripheralTextView.setText("");
         StartScanTask t = new StartScanTask();
         t.execute();
     }
@@ -132,9 +167,17 @@ public class Provisioning extends AppCompatActivity {
 
     public void stopScanning() {
         Log.d("progress", "Stopped Scanning");
-        peripheralTextView.append("Stopped Scanning");
         StopScanTask t = new StopScanTask();
         t.execute();
+    }
+
+    public void addItemToList(String o) {
+        Log.d("progress", "adding: " + o);
+        myList.add(o);
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, myList);
+
+        devicesList.setAdapter(adapter);
     }
 
     private class StartScanTask extends AsyncTask<Void, Integer, Void> {
@@ -146,6 +189,7 @@ public class Provisioning extends AppCompatActivity {
             return null;
         }
     }
+
     private class StopScanTask extends AsyncTask<Void, Integer, Void> {
 
         @Override
@@ -155,5 +199,4 @@ public class Provisioning extends AppCompatActivity {
             return null;
         }
     }
-
 }
