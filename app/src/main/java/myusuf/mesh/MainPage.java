@@ -1,6 +1,8 @@
 package myusuf.mesh;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainPage extends AppCompatActivity {
+    SharedPreferences dataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +24,8 @@ public class MainPage extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-        myToolbar.showOverflowMenu();
+
+        dataBase = getSharedPreferences("MeshData", Context.MODE_PRIVATE);
 
 
         // Provisioning Button
@@ -51,6 +53,9 @@ public class MainPage extends AppCompatActivity {
 
     public void launchActivity(Class c){
         Intent intent = new Intent(this, c);
+        if(c.equals(Topology.class)){
+
+        }
         startActivity(intent);
     }
 

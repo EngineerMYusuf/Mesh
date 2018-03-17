@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".Provisioning"/>
+        <activity android:name=".Provisioning" />
         <activity android:name=".Topology" />
         <activity android:name=".MainPage">
             <intent-filter>
@@ -31,7 +31,8 @@
         <activity android:name=".tempNode" />
         <activity android:name=".help" />
         <activity android:name=".humNode" />
-        <activity android:name=".motorNode"></activity>
+        <activity android:name=".motorNode" />
+        <activity android:name=".Registration"></activity>
     </application>
 
 </manifest>

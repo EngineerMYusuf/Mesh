@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ public class Provisioning extends AppCompatActivity {
     ListView devicesList;
     ArrayAdapter<String> adapter;
     ArrayList<String> myList;
+    String callbackString;
+    SharedPreferences dataBase;
 
     private ScanCallback leScanCallback = new ScanCallback() {
         @Override
@@ -44,10 +47,11 @@ public class Provisioning extends AppCompatActivity {
                 for (int i = 0; i < myList.size() + 1; i++) {
                     if(i == myList.size()){
                         Log.d("progress", "Found new Device called: " + result.getDevice().getAddress());
-                        addItemToList(result.getDevice().getAddress());
+                        addItemToList(result.getDevice().getName() + " @ " + result.getDevice().getAddress());
                         break;
                     }
-                    if (result.getDevice().getAddress().equals(myList.get(i))) {
+                    callbackString = result.getDevice().getName() + " @ " + result.getDevice().getAddress();
+                    if (callbackString.equals(myList.get(i))) {
                         Log.d("progress", "I saw you before Mr. " + result.getDevice().getAddress());
                         break;
                     }
@@ -65,20 +69,12 @@ public class Provisioning extends AppCompatActivity {
         setContentView(R.layout.activity_provisioning);
 
 
+
+        dataBase = getSharedPreferences("MeshData", Context.MODE_PRIVATE);
+
         devicesList = findViewById(android.R.id.list);
         myList = new ArrayList<String>();
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-        myList.add("ZERO");
-
-        adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, myList);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myList);
         devicesList.setAdapter(adapter);
         // BLE Stuff
 
@@ -128,9 +124,20 @@ public class Provisioning extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long id) {
                 Log.d("progress", "You have clicked the ID: " + id + " Position: " + position);
+                goToRegistration(position);
             }
         });
     }
+
+    public void goToRegistration(int pos){
+        Intent intent = new Intent(this,Registration.class);
+        String s = myList.get(pos);
+        String[] str = s.split("@ ");
+        intent.putExtra("NODE_ADDRESS", str[1]);
+        startActivity(intent);
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

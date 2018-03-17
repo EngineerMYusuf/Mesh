@@ -7,10 +7,31 @@
     android:id="@+id/topology"
     tools:context="myusuf.mesh.Topology">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/matbackground"
+            android:scaleType = "centerCrop"
+            />
+
+    </FrameLayout>
+
 
     <myusuf.mesh.MyCanvas
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pale"/>
+
+    <Button
+        android:id="@+id/updateTopology"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="update" />
 
     </RelativeLayout>

@@ -6,65 +6,79 @@
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.tempNode">
 
-        <Button
-            android:id="@+id/tempSend"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:text="Send"
-            tools:layout_editor_absoluteX="200dp"
-            tools:layout_editor_absoluteY="527dp" />
-        <Button
-            android:id="@+id/tempReceive"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_toEndOf="@+id/tempSend"
-            android:text="Receive"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="527dp" />
-        <TextView
-            android:id="@+id/tempnodeID"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="Nothing"
-            android:gravity="center"
-            android:textSize="50dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/tempnodeID"
-            android:id="@+id/tempnodeData"
-            android:textSize="50dp"
-            android:text="Nothing"/>
-
-
-        <TextView
-            android:id="@+id/tempnodeType"
-            android:layout_width="match_parent"
-            android:layout_above="@+id/nodeData"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/tempnodeID"
-            android:text="Nothing"
-            android:textSize="50dp"
-            android:gravity="end"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/tempIMG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/nodeData"
-            android:layout_marginBottom="23dp"
-            android:layout_marginEnd="23dp"
-            android:layout_toStartOf="@+id/tempnodeType"
-            android:scaleX="2"
-            android:scaleY="2"
-            app:srcCompat="@drawable/transnode" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/matbackground" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/tempSend"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Send"
+        tools:layout_editor_absoluteX="200dp"
+        tools:layout_editor_absoluteY="527dp" />
+
+    <Button
+        android:id="@+id/tempReceive"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/tempSend"
+        android:text="Receive"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="527dp" />
+
+    <TextView
+        android:id="@+id/tempnodeID"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="Nothing"
+        android:textSize="50dp" />
+
+    <TextView
+        android:id="@+id/tempnodeData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tempnodeID"
+        android:text="Nothing"
+        android:textSize="50dp" />
+
+
+    <TextView
+        android:id="@+id/tempnodeType"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tempnodeData"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/tempnodeID"
+        android:gravity="end"
+        android:text="Nothing"
+        android:textSize="50dp" />
+
+    <ImageView
+        android:id="@+id/tempIMG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tempnodeData"
+        android:layout_marginBottom="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_toStartOf="@+id/tempnodeType"
+        android:scaleX="2"
+        android:scaleY="2"
+        app:srcCompat="@drawable/transnode" />
 
 </RelativeLayout>

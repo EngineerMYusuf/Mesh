@@ -4,6 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.Provisioning">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/matbackground"
+            android:scaleType = "centerCrop"
+            />
+
+    </FrameLayout>
 
     <ListView
         android:id="@android:id/list"
