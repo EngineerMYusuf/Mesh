@@ -14,11 +14,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class tempNode extends AppCompatActivity {
 
     HttpAdapter h;
     SharedPreferences dataBase;
+    String getData = "";
+    String myData = "";
+    String p;
+    TextView info;
+    RefreshData r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,33 +36,37 @@ public class tempNode extends AppCompatActivity {
         dataBase = getSharedPreferences("MeshData", Context.MODE_PRIVATE);
         h = new HttpAdapter();
         int num = 0;
-        int myType = 0;
         String myData;
         num = getIntent().getIntExtra("WHICH_NODE", num);
-        myType = getIntent().getIntExtra("NODE_TYPE", myType);
-        myData = getIntent().getStringExtra("NODE_DATA");
+        getData = "00000001" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
+        String setData = "00000010" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
+
+        SendHTTP s = new SendHTTP();
+        s.execute(setData);
+        GetHTTP g = new GetHTTP();
+        p = String.valueOf(num);
+        myData = dataBase.getString(p,"");
+
+        if(myData.equals("")){
+            g.execute();
+        }
         TextView name = (TextView) findViewById(R.id.tempnodeID);
-        TextView type = (TextView) findViewById(R.id.tempnodeType);
-        TextView info = (TextView) findViewById(R.id.tempnodeData);
+        info = (TextView) findViewById(R.id.tempnodeData);
         Log.d("progress", "You want node: " + num);
-        name.setText(String.valueOf(num));
-        type.setText(String.valueOf(myType));
-        info.setText(myData);
 
         // Test Button
         Button send = (Button) findViewById(R.id.tempSend);
+        final int finalNum = num;
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("progress", "Send Clicked");
                 SendHTTP s = new SendHTTP();
-                s.execute("00010001");
-                // ToDo Send the appropriate packet
-                Log.d("progress", "Executing: 00010001");
+                s.execute("00000010" + intToEightBit(finalNum) + "00000000000000000000000000000000000000000000000000000000");                                                                      // ToDo add what to send
             }
         });
 
-
+/*
         // Test Button
         Button receive = (Button) findViewById(R.id.tempReceive);
         receive.setOnClickListener(new View.OnClickListener() {
@@ -67,49 +77,33 @@ public class tempNode extends AppCompatActivity {
                 g.execute();
             }
         });
+        */
+        r = new RefreshData();
+        r.run();
     }
-
-    // Depreciated
-    private void launchActivity() {
-
-        String data = "00110011" + "00010001";   // This means 0th node is connected to 2,3,6,7 and 3,7 is strong
-        data = data + "00001100" + "00000100";   // 1
-        data = data + "10000000" + "00000000";   // 2
-        data = data + "10000100" + "10000000";   // 3
-        data = data + "01000000" + "00000000";   // 4
-        data = data + "01010010" + "01000010";   // 5
-        data = data + "10000000" + "00000100";   // 6
-        data = data + "10000000" + "10000000";   // 7
-        int kn = 8;
-        Log.d("progress", "Launching Topology");
-        Intent intent = new Intent(this, Topology.class);
-        String[] datas = new String[kn];
-        datas[0] = "It's soooo hot here";
-        datas[1] = "ZZZzzzzzz.....";
-        datas[2] = "Huh?!  Who's there?";
-        datas[3] = "Dude dude dude. I just saw this lamp stare at me";
-        datas[4] = "See, I can touch my nose with my tongue";
-        datas[5] = "Maaaan. The government always controls the media maaaan.";
-        datas[6] = "Dude it feels like we are just puppets.";
-        datas[7] = "Darling you looook peeerfect tonight Na Na Naaaa.";
-        int[] types = new int[kn];
-        types[0] = 1;
-        types[1] = 2;
-        types[2] = 5;
-        types[3] = 1;
-        types[4] = 4;
-        types[5] = 4;
-        types[6] = 3;
-        types[7] = 99;
-        intent.putExtra("NODE_DATA", datas);
-        intent.putExtra("NODE_TYPE", types);
-        intent.putExtra("CONNECTION_TABLE", data);
-        intent.putExtra("KN", kn);
-        startActivity(intent);
-        Log.d("progress", "Skipped");
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        r.interrupt();
+        finish();
     }
 
 
+    public class RefreshData extends Thread{
+        public void run(){
+            while(true){
+                GetHTTP g = new GetHTTP();
+                g.execute();
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                myData = dataBase.getString(p,"");
+                info.setText(myData);
+            }
+        }
+    }
 
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
 
@@ -127,6 +121,44 @@ public class tempNode extends AppCompatActivity {
         }
     }
 
+    public static String intToEightBit(int number){
+        String binaryString = "";
+
+        if(number < 2){
+            binaryString = "0000000" + Integer.toBinaryString(number);
+        }
+        else if(number < 4){
+            binaryString = "000000" + Integer.toBinaryString(number);
+        }
+        else if(number < 8){
+            binaryString = "00000" + Integer.toBinaryString(number);
+        }
+        else if(number < 16){
+            binaryString = "0000" + Integer.toBinaryString(number);
+        }
+        else if(number < 32){
+            binaryString = "000" + Integer.toBinaryString(number);
+        }
+        else if(number < 64){
+            binaryString = "00" + Integer.toBinaryString(number);
+        }
+        else if(number < 128){
+            binaryString = "0" + Integer.toBinaryString(number);
+        }
+        else {
+            binaryString = Integer.toBinaryString(number);
+        }
+        return binaryString;
+    }
+    public static String reverser(String s){
+        String reverse = "";
+        for(int i = s.length() - 1; i >= 0; i--)
+        {
+            reverse = reverse + s.charAt(i);
+        }
+        return s;
+    }
+
     public class GetHTTP extends AsyncTask<Void, String, Void> {
 
         @Override
@@ -135,15 +167,26 @@ public class tempNode extends AppCompatActivity {
             String response = "";
             try {
                 response = h.getData();
+                String[] packets = response.split(",");
+                for (String rep : packets) {
+                    if (rep.substring(0, 8).equals("00010000")) {
+                        Log.d("Get HTTP", "Found a connection table message.");
+                        dataBase.edit().putString("CONN_TABLE", rep).apply();
+                    }
+                    else if(rep.substring(0,8).equals("00000000")){
+                        Log.d("Get HTTP", "Found an answer message.");
+                        int koo = Integer.parseInt(rep.substring(8,16),2);
+                        String p = String.valueOf(koo);
+                        dataBase.edit().putString(p,rep.substring(16)).apply();
+                    }
+                }
                 Log.d("progress", "Got: " + response);
             } catch (Exception e) {
             }
             this.publishProgress(response);
             return null;
         }
-
         protected void onProgressUpdate(String... values) {
-            // ToDo You have the data now send to processing
         }
     }
 

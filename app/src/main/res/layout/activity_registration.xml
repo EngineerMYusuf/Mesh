@@ -5,6 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.Registration">
+    <!-- -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/matbackground"
+            android:scaleType = "centerCrop"
+            />
+
+    </FrameLayout>
 
 
     <TextView
@@ -15,8 +28,8 @@
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:text="Enter Details"
-        android:textColor="#000000 "
-        android:textSize="50dp" />
+        android:textColor="#FFFFFF"
+        android:textSize="50sp" />
     <Button
         android:id="@+id/addDeviceButton"
         android:layout_width="100dp"
@@ -25,20 +38,22 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="87dp"
         android:text="add device"
-        android:textSize="13dp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/deviceNameText"
+        android:textColor="#FFFFFF"
         android:text="Enter Name:"
         android:gravity="center"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/registerationHeader"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/deviceNameInput"
+        android:textColor="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/registerationHeader"
@@ -49,13 +64,14 @@
 
     <TextView
         android:id="@+id/deviceTypeText"
+        android:textColor="#FFFFFF"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/deviceNameText"
         android:gravity="center"
         android:text="Enter Type:"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/deviceTypeInput"
@@ -65,12 +81,26 @@
         android:layout_toEndOf="@+id/deviceTypeText"
         android:textColor="#BFBEBE"
         android:gravity="center"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:ems="10"
         android:inputType="text"
-        android:text="Ex: temp, hum, light, motor" />
+        android:text="" />
+
+    <EditText
+        android:id="@+id/deviceConnInput"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/deviceLEText"
+        android:layout_toEndOf="@+id/deviceTypeText"
+        android:textColor="#BFBEBE"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="" />
 
     <TextView
+        android:textColor="#FFFFFF"
         android:id="@+id/deviceLEText"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -78,11 +108,23 @@
         android:layout_below="@+id/deviceTypeText"
         android:gravity="center"
         android:text="Is the device Low Energy?:"
-        android:textSize="17dp" />
+        android:textSize="17sp" />
+
+    <TextView
+        android:textColor="#FFFFFF"
+        android:id="@+id/deviceConntoText"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/deviceLEText"
+        android:gravity="center"
+        android:text="Which device is it connected to?"
+        android:textSize="17sp" />
 
     <CheckBox
+        android:textColor="#FFFFFF"
         android:button="@null"
-        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
         android:id="@+id/lowEnergy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

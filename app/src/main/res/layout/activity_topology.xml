@@ -1,37 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topology"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/topology"
     tools:context="myusuf.mesh.Topology">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <myusuf.mesh.MyCanvas
+            android:id="@+id/pale"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/matbackground"
-            android:scaleType = "centerCrop"
-            />
-
+            android:layout_height="match_parent" />
     </FrameLayout>
 
 
-    <myusuf.mesh.MyCanvas
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/pale"/>
-
-    <Button
+    <ImageButton
         android:id="@+id/updateTopology"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:text="update" />
+        android:src="@drawable/refresh"
+        android:background="#0000"/>
 
-    </RelativeLayout>
+</RelativeLayout>

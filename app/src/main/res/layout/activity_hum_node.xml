@@ -16,7 +16,6 @@
             android:src="@drawable/matbackground"
             android:scaleType = "centerCrop"
             />
-
     </FrameLayout>
 
     <Button
@@ -29,16 +28,14 @@
         tools:layout_editor_absoluteX="200dp"
         tools:layout_editor_absoluteY="527dp" />
 
-
-    <Button
+    <ImageButton
         android:id="@+id/humReceive"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/humSend"
-        android:text="Receive"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="527dp" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/refreshsmall"
+        android:background="#0000"/>
 
     <TextView
         android:id="@+id/humnodeID"
@@ -60,27 +57,16 @@
         android:text="Nothing"/>
 
 
-    <TextView
-        android:id="@+id/humnodeType"
-        android:layout_width="match_parent"
-        android:layout_above="@+id/humnodeData"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/humnodeID"
-        android:text="Nothing"
-        android:textSize="50dp"
-        android:gravity="end"/>
-
     <ImageView
         android:id="@+id/humIMG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/humnodeData"
-        android:layout_marginBottom="23dp"
-        android:layout_marginEnd="23dp"
-        android:layout_toStartOf="@+id/humnodeType"
+        android:layout_alignEnd="@+id/humnodeID"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="18dp"
         android:scaleX="2"
         android:scaleY="2"
-        app:srcCompat="@drawable/transnode" />
+        app:srcCompat="@drawable/lightblue" />
 
 </RelativeLayout>

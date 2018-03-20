@@ -38,6 +38,7 @@ public class Provisioning extends AppCompatActivity {
     ArrayList<String> myList;
     String callbackString;
     SharedPreferences dataBase;
+    Switch scan;
 
     private ScanCallback leScanCallback = new ScanCallback() {
         @Override
@@ -104,7 +105,7 @@ public class Provisioning extends AppCompatActivity {
         }
 
         // Scan Switch
-        Switch scan = (Switch) findViewById(R.id.scan);
+        scan = (Switch) findViewById(R.id.scan);
         //boolean scanState = scan.isChecked();
 
         scan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -128,8 +129,15 @@ public class Provisioning extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        scan.setChecked(false);
+        finish();
+    }
 
     public void goToRegistration(int pos){
+        scan.setChecked(false);
         Intent intent = new Intent(this,Registration.class);
         String s = myList.get(pos);
         String[] str = s.split("@ ");

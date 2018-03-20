@@ -7,17 +7,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 public class HttpAdapter {
 
-    public HttpAdapter() {
+    HttpAdapter() {
 
     }
 
-    public void sendData(String data) throws MalformedURLException, ProtocolException, IOException {
+    void sendData(String data) throws IOException {
         String url = "http://192.168.137.5/user.txt";
 
         URL obj = new URL(url);
@@ -42,12 +40,16 @@ public class HttpAdapter {
                         response.append(inputLine);
                     }
                 }
+            } else if (responseCode == 420) {
+                Log.d("HTTP", "Empty Body Sent");
             } else {
-                Log.d("progress", "HTTP Issue in sendData");
+                Log.d("HTTP", "HTTP Issue");
             }
+
         } catch (Exception e) {
-            Log.d("progress", "Exception: " + e + " in sendHTTP");
+            Log.d("HTTP", "Exception: " + e + " in sendHTTP");
         }
+
 
     }
 
@@ -80,10 +82,9 @@ public class HttpAdapter {
 
                 return result;
             } else {
-                System.out.println("HTTP issue");
+                Log.d("HTTP", "HTTP Issue");
             }
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (Exception ignored) {
         }
 
         return "";

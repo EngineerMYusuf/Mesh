@@ -17,6 +17,17 @@
             android:src="@drawable/matbackground" />
 
     </FrameLayout>
+    <ImageView
+        android:id="@+id/tempIMG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tempnodeData"
+        android:layout_marginBottom="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_toStartOf="@+id/tempnodeType"
+        android:scaleX="2"
+        android:scaleY="2"
+        app:srcCompat="@drawable/red" />
 
     <Button
         android:id="@+id/tempSend"
@@ -40,16 +51,18 @@
 
     <TextView
         android:id="@+id/tempnodeID"
+        android:textColor="#FF0000"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:text="Nothing"
+        android:text=""
         android:textSize="50dp" />
 
     <TextView
         android:id="@+id/tempnodeData"
+        android:textColor="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
@@ -60,25 +73,15 @@
 
     <TextView
         android:id="@+id/tempnodeType"
+        android:textColor="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tempnodeData"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/tempnodeID"
         android:gravity="end"
-        android:text="Nothing"
         android:textSize="50dp" />
 
-    <ImageView
-        android:id="@+id/tempIMG"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tempnodeData"
-        android:layout_marginBottom="23dp"
-        android:layout_marginEnd="23dp"
-        android:layout_toStartOf="@+id/tempnodeType"
-        android:scaleX="2"
-        android:scaleY="2"
-        app:srcCompat="@drawable/transnode" />
+
 
 </RelativeLayout>
