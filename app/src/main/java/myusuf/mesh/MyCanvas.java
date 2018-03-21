@@ -1,6 +1,7 @@
 package myusuf.mesh;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import static android.support.v4.content.ContextCompat.startActivity;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
@@ -101,8 +103,11 @@ public class MyCanvas extends View {
 
     public void startNodes(int i) {
         this.nodeTouched = i;
+        Log.d("touched", "Set node touched to: " + this.nodeTouched);
     }
-/*
+
+
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -129,7 +134,6 @@ public class MyCanvas extends View {
         }
         return true;
     }
-*/
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -189,6 +193,7 @@ public class MyCanvas extends View {
                 }
             }
         }
+        Log.d("draw Success?", "kn: " +kn );
         for (int i = 0; i < kn; i++) {
             Log.d("types", "Type  " + i + ": " + types[i]);
             switch (types[i]) {

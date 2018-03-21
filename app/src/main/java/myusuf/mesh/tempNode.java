@@ -16,6 +16,8 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static java.lang.Thread.sleep;
+
 public class tempNode extends AppCompatActivity {
 
     HttpAdapter h;
@@ -24,7 +26,7 @@ public class tempNode extends AppCompatActivity {
     String myData = "";
     String p;
     TextView info;
-    RefreshData r;
+    //RefreshData r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +42,16 @@ public class tempNode extends AppCompatActivity {
         num = getIntent().getIntExtra("WHICH_NODE", num);
         getData = "00000001" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
         String setData = "00000010" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
-
+/*
         SendHTTP s = new SendHTTP();
         s.execute(setData);
-        GetHTTP g = new GetHTTP();
+        GetHTTP g = new GetHTTP();*/
         p = String.valueOf(num);
-        myData = dataBase.getString(p,"");
 
-        if(myData.equals("")){
-            g.execute();
-        }
         TextView name = (TextView) findViewById(R.id.tempnodeID);
         info = (TextView) findViewById(R.id.tempnodeData);
+
+        info.setText(dataBase.getString(p,"o"));
         Log.d("progress", "You want node: " + num);
 
         // Test Button
@@ -66,7 +66,7 @@ public class tempNode extends AppCompatActivity {
             }
         });
 
-/*
+
         // Test Button
         Button receive = (Button) findViewById(R.id.tempReceive);
         receive.setOnClickListener(new View.OnClickListener() {
@@ -77,25 +77,28 @@ public class tempNode extends AppCompatActivity {
                 g.execute();
             }
         });
-        */
+        setContentView(R.layout.activity_temp_node);
+        /*
         r = new RefreshData();
-        r.run();
+        r.execute();*/
     }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        r.interrupt();
+        //r.cancel(true);
         finish();
     }
+/*
 
+    public class RefreshData extends AsyncTask<Void, Void, Void>{
 
-    public class RefreshData extends Thread{
-        public void run(){
+        @Override
+        protected Void doInBackground(Void... params) {
             while(true){
                 GetHTTP g = new GetHTTP();
                 g.execute();
                 try {
-                    sleep(500);
+                    sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -104,7 +107,7 @@ public class tempNode extends AppCompatActivity {
             }
         }
     }
-
+*/
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
 
         @Override
@@ -163,7 +166,7 @@ public class tempNode extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("progress", "In GetHTTP task");
+            Log.d("tempNode", "In GetHTTP task");
             String response = "";
             try {
                 response = h.getData();
@@ -173,7 +176,7 @@ public class tempNode extends AppCompatActivity {
                         Log.d("Get HTTP", "Found a connection table message.");
                         dataBase.edit().putString("CONN_TABLE", rep).apply();
                     }
-                    else if(rep.substring(0,8).equals("00000000")){
+                    else if(rep.substring(0,8).equals("00010001")){
                         Log.d("Get HTTP", "Found an answer message.");
                         int koo = Integer.parseInt(rep.substring(8,16),2);
                         String p = String.valueOf(koo);
@@ -187,6 +190,7 @@ public class tempNode extends AppCompatActivity {
             return null;
         }
         protected void onProgressUpdate(String... values) {
+            info.setText(dataBase.getString(p,""));
         }
     }
 

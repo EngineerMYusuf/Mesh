@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,6 +31,7 @@ public class Topology extends AppCompatActivity {
     MyCanvas paletV;
     String oldConnTable = "";
     GetConnectionTable t;
+    SendToNode pk;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,10 +62,9 @@ public class Topology extends AppCompatActivity {
                 t.run();
                 paletV.invalidate();
             }
-        });/*
-        SendToNode pk = new SendToNode();
+        });
+        pk = new SendToNode();
         pk.execute();
-*/
 
         paletV.setKn(kn);
         paletV.invalidate();
@@ -99,25 +98,33 @@ public class Topology extends AppCompatActivity {
         return reverse;
     }
 
-/*
-    public class SendToNode extends AsyncTask<Void, Void, Void>{
+
+    public class SendToNode extends AsyncTask<Void, Void, Void> {
+        private boolean done = false;
+
+        public void quit(){
+            done = true;
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
-            while(true){
+            while(!done){
                 Log.d("checking if touched","checking");
-                if(!(paletV.getNodeTouched() == 0)){
+                int k = paletV.getNodeTouched();
+                if(!(k == 0)){
                     Log.d("touched", "Touched");
                     Log.d("types", dataBase.getString("types",""));
-                    switch (dataBase.getString("types","")){
-                        case "1":
-                            startNodes(paletV.getNodeTouched(),tempNode.class);
-                        case "2":
-                            startNodes(paletV.getNodeTouched(),humNode.class);
-                        case "3":
-                            startNodes(paletV.getNodeTouched(),motorNode.class);
-                        case "":
-
+                    String[] type = dataBase.getString("types","").split(",");
+                    String hn = type[k];
+                    Log.d("Topology", "The type you want is: " + hn);
+                    if(hn.equals("1")){
+                        startNodesTop(k, tempNode.class);
+                    }
+                    else if(hn.equals("2")){
+                        startNodesTop(k, humNode.class);
+                    }
+                    else if(hn.equals("3")){
+                        startNodesTop(k, motorNode.class);
                     }
                 }
                 try {
@@ -125,16 +132,19 @@ public class Topology extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
+            return null;
         }
     }
 
-*/
-    private void startNodes(int node, Class c) {
+
+    private void startNodesTop(int node, Class c) {
+        pk.quit();
         Intent intent = new Intent(this, c);
+        Log.d("startNodesTopology", c + " ," + node);
         intent.putExtra("WHICH_NODE", node);
         startActivity(intent);
+        paletV.setNodeTouched(0);
     }
     public class GetConnectionTable extends Thread {
         public void run() {
@@ -179,7 +189,7 @@ public class Topology extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("progress", "In GetHTTP task");
+            Log.d("Topology", "In GetHTTP task");
             String response = "";
             try {
                 response = h.getData();
