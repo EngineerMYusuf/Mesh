@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -25,7 +26,11 @@ public class tempNode extends AppCompatActivity {
     String getData = "";
     String myData = "";
     String p;
+    String bitDataToSend;
     TextView info;
+    EditText dataToSend;
+    String setData;
+    int finalNum;
     //RefreshData r;
 
     @Override
@@ -41,34 +46,33 @@ public class tempNode extends AppCompatActivity {
         String myData;
         num = getIntent().getIntExtra("WHICH_NODE", num);
         getData = "00000001" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
-        String setData = "00000010" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
-/*
-        SendHTTP s = new SendHTTP();
-        s.execute(setData);
-        GetHTTP g = new GetHTTP();*/
+
         p = String.valueOf(num);
+
+        dataToSend = findViewById(R.id.tempDataToSend);
 
         TextView name = (TextView) findViewById(R.id.tempnodeID);
         info = (TextView) findViewById(R.id.tempnodeData);
 
-        info.setText(dataBase.getString(p,"o"));
+        info.setText(dataBase.getString(p, "o"));
         Log.d("progress", "You want node: " + num);
+        finalNum = num;
 
         // Test Button
-        Button send = (Button) findViewById(R.id.tempSend);
-        final int finalNum = num;
+        Button send = findViewById(R.id.tempSend);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("progress", "Send Clicked");
+                bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
+                setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
                 SendHTTP s = new SendHTTP();
-                s.execute("00000010" + intToEightBit(finalNum) + "00000000000000000000000000000000000000000000000000000000");                                                                      // ToDo add what to send
+                s.execute(setData);
             }
         });
 
-
         // Test Button
-        Button receive = (Button) findViewById(R.id.tempReceive);
+        Button receive = findViewById(R.id.tempReceive);
         receive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,19 +86,38 @@ public class tempNode extends AppCompatActivity {
         r = new RefreshData();
         r.execute();*/
     }
+
+
+    public void SendOnClick(View view){
+        Log.d("progress", "Send Clicked");
+
+        if(dataToSend.getText().toString().equals("")){
+            return;
+        }
+        bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
+        setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
+        SendHTTP s = new SendHTTP();
+        s.execute(setData);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         //r.cancel(true);
         finish();
     }
-/*
+
 
     public class RefreshData extends AsyncTask<Void, Void, Void>{
 
+        private boolean done = false;
+
+        public void quit(){
+            done = true;
+        }
         @Override
         protected Void doInBackground(Void... params) {
-            while(true){
+            while(!done){
                 GetHTTP g = new GetHTTP();
                 g.execute();
                 try {
@@ -105,9 +128,10 @@ public class tempNode extends AppCompatActivity {
                 myData = dataBase.getString(p,"");
                 info.setText(myData);
             }
+            return null;
         }
     }
-*/
+
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
 
         @Override

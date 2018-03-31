@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import java.io.IOException;
@@ -19,10 +20,7 @@ import static java.lang.Thread.sleep;
 
 public class Topology extends AppCompatActivity {
     final String requestConnTable = "000000010000000000000000000000000000000000000000000000000000000000000000";
-    String nodeData;
-    String myNodeData;
-    String nodeType;
-    int myNodeType;
+
     HttpAdapter h;
     int kn;
     SharedPreferences dataBase;
@@ -31,7 +29,22 @@ public class Topology extends AppCompatActivity {
     MyCanvas paletV;
     String oldConnTable = "";
     GetConnectionTable t;
-    SendToNode pk;
+    //SendToNode pk;
+
+    public static String reverser(String s) {
+        String reverse = "";
+        for (int i = s.length() - 1; i >= 0; i--) {
+            reverse = reverse + s.charAt(i);
+        }
+        return reverse;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //pk.quit();
+        finish();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,78 +65,89 @@ public class Topology extends AppCompatActivity {
 
         paletV.setTypes(types);
 
+        Button getConnTable = findViewById(R.id.getConnTable);
+        getConnTable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("button", "You pressed get Table");
+                t = new GetConnectionTable();
+                t.execute();
+            }
+        });
+
         // Test Button
         ImageButton update = findViewById(R.id.updateTopology);
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("button", "You pressed update topology");
-                t = new GetConnectionTable();
-                t.run();
+                Log.d("button", "You pressed update Topology");
+                drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
                 paletV.invalidate();
             }
         });
-        pk = new SendToNode();
-        pk.execute();
+        //pk = new SendToNode();
+       // pk.execute();
 
         paletV.setKn(kn);
         paletV.invalidate();
 
     }
 
-
     public void drawConnections(String conntable) {
-        if(conntable.length() < 8){
+        if (conntable.length() < 8) {
             return;
         }
         if (!(kn == 0) && !(kn > 8)) {
             paletV.setKn(kn);
             conn = new String[8];
             for (int i = 0; i < 8; i++) {                                                           // Will be later changed to i < kn
-
                 conn[i] = conntable.substring(8 * i, 8 * i + 8);                                    //  Will be later changed to (kn * i * 2, kn * i * 2 + kn)
                 conn[i] = reverser(conn[i]);
-                Log.d("Connections", "Connections: " + conn[i] );
+                Log.d("Connections", "Connections: " + conn[i]);
             }
             paletV.setConnections(conn);
-            paletV.invalidate();
+            //paletV.invalidate();
         }
     }
-    public static String reverser(String s){
-        String reverse = "";
-        for(int i = s.length() - 1; i >= 0; i--)
-        {
-            reverse = reverse + s.charAt(i);
-        }
-        return reverse;
+
+    private void startNodesTop(int node, Class c) {
+        //pk.quit();
+        paletV.setNodeTouched(0);
+        Intent intent = new Intent(this, c);
+        Log.d("startNodesTopology", c + " ," + node);
+        intent.putExtra("WHICH_NODE", node);
+        startActivity(intent);
     }
 
-
+    public void sendToDraw(String s) {
+        if (!(s.equals(""))) {
+            drawConnections(s);
+        }
+    }
+/*
     public class SendToNode extends AsyncTask<Void, Void, Void> {
         private boolean done = false;
 
-        public void quit(){
+        public void quit() {
             done = true;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            while(!done){
-                Log.d("checking if touched","checking");
+            while (!done) {
+                Log.d("checking if touched", "checking");
                 int k = paletV.getNodeTouched();
-                if(!(k == 0)){
+                if (!(k == 0)) {
                     Log.d("touched", "Touched");
-                    Log.d("types", dataBase.getString("types",""));
-                    String[] type = dataBase.getString("types","").split(",");
+                    Log.d("types", dataBase.getString("types", ""));
+                    String[] type = dataBase.getString("types", "").split(",");
                     String hn = type[k];
                     Log.d("Topology", "The type you want is: " + hn);
-                    if(hn.equals("1")){
+                    if (hn.equals("1")) {
                         startNodesTop(k, tempNode.class);
-                    }
-                    else if(hn.equals("2")){
+                    } else if (hn.equals("2")) {
                         startNodesTop(k, humNode.class);
-                    }
-                    else if(hn.equals("3")){
+                    } else if (hn.equals("3")) {
                         startNodesTop(k, motorNode.class);
                     }
                 }
@@ -135,21 +159,16 @@ public class Topology extends AppCompatActivity {
             }
             return null;
         }
-    }
 
-
-    private void startNodesTop(int node, Class c) {
-        pk.quit();
-        Intent intent = new Intent(this, c);
-        Log.d("startNodesTopology", c + " ," + node);
-        intent.putExtra("WHICH_NODE", node);
-        startActivity(intent);
-        paletV.setNodeTouched(0);
     }
-    public class GetConnectionTable extends Thread {
-        public void run() {
+*/
+    public class GetConnectionTable extends AsyncTask<Void, Void, Void> {                                                // ToDo Convert to AsyncTask
+
+        @Override
+        protected Void doInBackground(Void... voids) {
             SendHTTP s = new SendHTTP();
             s.execute(requestConnTable);
+            Log.d("HTTP Send", "sent request for connection table");
             try {
                 sleep(5000);
             } catch (InterruptedException e) {
@@ -157,15 +176,16 @@ public class Topology extends AppCompatActivity {
             }
             GetHTTP g = new GetHTTP();
             g.execute();
-            Log.d("HTTP Send", "sent request for connection table");
-            if (dataBase.getString("CONN_TABLE","").length() != kn) {
-                drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
+            //if (dataBase.getString("CONN_TABLE", "").length() != kn) {
+            //drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
+            //}
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }
-    }
-    public void sendToDraw(String s){
-        if(!(s.equals(""))){
-            drawConnections(s);
+            //paletV.invalidate();
+            return null;
         }
     }
 
@@ -198,16 +218,16 @@ public class Topology extends AppCompatActivity {
                     if (rep.substring(0, 8).equals("00010000")) {
                         Log.d("Get HTTP", "Found a connection table message.");
                         dataBase.edit().putString("CONN_TABLE", rep.substring(8)).apply();
-                    }
-                    else if(rep.substring(0,8).equals("00010001")){
+                    } else if (rep.substring(0, 8).equals("00010001")) {
                         Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8,16),2);
+                        int koo = Integer.parseInt(rep.substring(8, 16), 2);
                         String p = String.valueOf(koo);
-                        dataBase.edit().putString(p,rep.substring(16)).apply();
+                        dataBase.edit().putString(p, rep.substring(16)).apply();
                     }
                 }
                 Log.d("progress", "Got: " + response);
-                sendToDraw(dataBase.getString("CONN_TABLE",""));
+                sendToDraw(dataBase.getString("CONN_TABLE", ""));
+                oldConnTable = dataBase.getString("CONN_TABLE","");
             } catch (Exception e) {
             }
             this.publishProgress(response);
@@ -215,6 +235,8 @@ public class Topology extends AppCompatActivity {
         }
 
         protected void onProgressUpdate(String... values) {
+            sendToDraw(dataBase.getString("CONN_TABLE", ""));
+
         }
     }
 }

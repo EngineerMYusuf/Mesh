@@ -16,6 +16,13 @@
             android:layout_height="match_parent" />
     </FrameLayout>
 
+    <ImageButton
+        android:id="@+id/getConnTable"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/down"
+        android:background="#0000"/>
+
 
     <ImageButton
         android:id="@+id/updateTopology"

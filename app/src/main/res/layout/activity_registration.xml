@@ -60,7 +60,8 @@
         android:layout_toEndOf="@+id/deviceNameText"
         android:ems="10"
         android:inputType="text"
-        android:text="" />
+        android:text=""
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/deviceTypeText"
