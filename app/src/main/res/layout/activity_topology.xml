@@ -10,12 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/matbackground"
+            android:scaleType = "centerCrop" />
+
         <myusuf.mesh.MyCanvas
+            android:background="@drawable/matbackground"
             android:id="@+id/pale"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </FrameLayout>
 
+    </FrameLayout>
+<!--
     <ImageButton
         android:id="@+id/getConnTable"
         android:layout_width="48dp"
@@ -23,7 +31,7 @@
         android:src="@drawable/down"
         android:background="#0000"/>
 
-
+-->
     <ImageButton
         android:id="@+id/updateTopology"
         android:layout_width="48dp"

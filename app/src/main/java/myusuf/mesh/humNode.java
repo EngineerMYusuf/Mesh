@@ -1,7 +1,6 @@
 package myusuf.mesh;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -24,7 +24,42 @@ public class humNode extends AppCompatActivity {
     String myData = "";
     String p;
     TextView info;
-    RefreshData r;
+    String response;
+    EditText dataToSend;
+    String bitDataToSend;
+    String setData;
+    int finalNum;
+
+    public static String intToEightBit(int number) {
+        String binaryString;
+
+        if (number < 2) {
+            binaryString = "0000000" + Integer.toBinaryString(number);
+        } else if (number < 4) {
+            binaryString = "000000" + Integer.toBinaryString(number);
+        } else if (number < 8) {
+            binaryString = "00000" + Integer.toBinaryString(number);
+        } else if (number < 16) {
+            binaryString = "0000" + Integer.toBinaryString(number);
+        } else if (number < 32) {
+            binaryString = "000" + Integer.toBinaryString(number);
+        } else if (number < 64) {
+            binaryString = "00" + Integer.toBinaryString(number);
+        } else if (number < 128) {
+            binaryString = "0" + Integer.toBinaryString(number);
+        } else {
+            binaryString = Integer.toBinaryString(number);
+        }
+        return binaryString;
+    }
+
+    public static String reverser(String s) {
+        String reverse = "";
+        for (int i = s.length() - 1; i >= 0; i--) {
+            reverse = reverse + s.charAt(i);
+        }
+        return s;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,29 +76,29 @@ public class humNode extends AppCompatActivity {
         String myData;
         num = getIntent().getIntExtra("WHICH_NODE", num);
         getData = "00000001" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
-        SendHTTP s = new SendHTTP();
-        s.execute(getData);
-        GetHTTP g = new GetHTTP();
-        p = String.valueOf(num);
-        myData = dataBase.getString(p,"");
-        if(myData.equals("")){
-            g.execute();
-        }
-        TextView name = (TextView) findViewById(R.id.humnodeID);
-        info = (TextView) findViewById(R.id.humnodeData);
-        Log.d("progress", "You want node: " + num);
 
+        p = String.valueOf(num);
+        myData = dataBase.getString(p, "");
+
+        TextView name = findViewById(R.id.humnodeID);
+        info = findViewById(R.id.humnodeData);
+        Log.d("progress", "We are in node: " + num + "'s page");
+
+        dataToSend = findViewById(R.id.tempDataToSend);
+
+        finalNum = num;
         // Test Button
         Button send = findViewById(R.id.humSend);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("progress", "Send Clicked");
+                bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
+                setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
                 SendHTTP s = new SendHTTP();
-                s.execute("");                                                                      // ToDo add what to send
+                s.execute(setData);                                                                     // ToDo add what to send
             }
         });
-/*
+
         // Test Button
         // ToDo Put the AsyncTask getHTTP here to get data from it
         ImageButton receive = findViewById(R.id.humReceive);
@@ -71,36 +106,16 @@ public class humNode extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("progress", "Recieve Clicked");
-                GetHTTP g = new GetHTTP();
-                g.execute();
+                SendHTTP s = new SendHTTP();
+                s.execute(getData);
             }
-        });*/
-        r = new RefreshData();
-        r.run();
+        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        r.interrupt();
         finish();
-    }
-
-
-    public class RefreshData extends Thread{
-        public void run(){
-            while(true){
-                GetHTTP g = new GetHTTP();
-                g.execute();
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                myData = dataBase.getString(p,"");
-                info.setText(myData);
-            }
-        }
     }
 
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
@@ -111,82 +126,25 @@ public class humNode extends AppCompatActivity {
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
-                h.sendData(data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
+                info.setText(dataBase.getString(String.valueOf(finalNum),""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
     }
-
-    public static String intToEightBit(int number){
-        String binaryString;
-
-        if(number < 2){
-            binaryString = "0000000" + Integer.toBinaryString(number);
-        }
-        else if(number < 4){
-            binaryString = "000000" + Integer.toBinaryString(number);
-        }
-        else if(number < 8){
-            binaryString = "00000" + Integer.toBinaryString(number);
-        }
-        else if(number < 16){
-            binaryString = "0000" + Integer.toBinaryString(number);
-        }
-        else if(number < 32){
-            binaryString = "000" + Integer.toBinaryString(number);
-        }
-        else if(number < 64){
-            binaryString = "00" + Integer.toBinaryString(number);
-        }
-        else if(number < 128){
-            binaryString = "0" + Integer.toBinaryString(number);
-        }
-        else {
-            binaryString = Integer.toBinaryString(number);
-        }
-        return binaryString;
-    }
-    public static String reverser(String s){
-        String reverse = "";
-        for(int i = s.length() - 1; i >= 0; i--)
-        {
-            reverse = reverse + s.charAt(i);
-        }
-        return s;
-    }
-
-    public class GetHTTP extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Log.d("progress", "In GetHTTP task");
-            String response = "";
-            try {
-                response = h.getData();
-                String[] packets = response.split(",");
-                for (String rep : packets) {
-                    if (rep.substring(0, 8).equals("00010000")) {
-                        Log.d("Get HTTP", "Found a connection table message: " + rep);
-                        dataBase.edit().putString("CONN_TABLE", rep.substring(8)).apply();
-                    }
-                    else if(rep.substring(0,8).equals("00000000")){
-                        Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8,16),2);
-                        String p = String.valueOf(koo);
-                        dataBase.edit().putString(p,rep.substring(16)).apply();
-                    }
-                }
-                Log.d("progress", "Got: " + response);
-            } catch (Exception e) {
-            }
-            this.publishProgress(response);
-            return null;
-        }
-        protected void onProgressUpdate(String... values) {
-        }
-    }
-
 }
 

@@ -14,8 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/matbackground"
-            android:scaleType = "centerCrop"
-            />
+            android:scaleType = "centerCrop" />
 
     </FrameLayout>
 
@@ -37,7 +36,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:src="@drawable/edit_undo"
-        android:background="#00000"/>
+        android:background="#0000"/>
 
     <ImageButton
         android:id="@+id/goToProvisioning"
@@ -47,7 +46,7 @@
         android:layout_alignBottom="@+id/goToTopology"
         android:layout_alignParentEnd="true"
         android:src="@drawable/plus"
-        android:background="#00000"/>
+        android:background="#0000"/>
 
     <EditText
         android:layout_width="200dp"
@@ -90,7 +89,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/restart"
-        android:background="#00000"/>
+        android:background="#0000"/>
 
     <ImageButton
         android:id="@+id/goToTopology"
@@ -100,6 +99,6 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="105dp"
         android:src="@drawable/network_alt"
-        android:background="#00000"/>
+        android:background="#0000"/>
 
 </RelativeLayout>

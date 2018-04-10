@@ -3,6 +3,7 @@ package myusuf.mesh;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -26,12 +28,12 @@ public class tempNode extends AppCompatActivity {
     String getData = "";
     String myData = "";
     String p;
-    String bitDataToSend;
     TextView info;
+    String response;
     EditText dataToSend;
+    String bitDataToSend;
     String setData;
     int finalNum;
-    //RefreshData r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class tempNode extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("progress", "Send Clicked");
+                Log.d("progress","Send Clicked");
                 bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
                 setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
                 SendHTTP s = new SendHTTP();
@@ -72,32 +74,15 @@ public class tempNode extends AppCompatActivity {
         });
 
         // Test Button
-        Button receive = findViewById(R.id.tempReceive);
+        ImageButton receive = findViewById(R.id.tempReceive);
         receive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("progress", "Recieve Clicked");
-                GetHTTP  g = new GetHTTP();
-                g.execute();
+                SendHTTP s = new SendHTTP();
+                s.execute(getData);
             }
         });
-        setContentView(R.layout.activity_temp_node);
-        /*
-        r = new RefreshData();
-        r.execute();*/
-    }
-
-
-    public void SendOnClick(View view){
-        Log.d("progress", "Send Clicked");
-
-        if(dataToSend.getText().toString().equals("")){
-            return;
-        }
-        bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
-        setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
-        SendHTTP s = new SendHTTP();
-        s.execute(setData);
     }
 
     @Override
@@ -105,31 +90,6 @@ public class tempNode extends AppCompatActivity {
         super.onBackPressed();
         //r.cancel(true);
         finish();
-    }
-
-
-    public class RefreshData extends AsyncTask<Void, Void, Void>{
-
-        private boolean done = false;
-
-        public void quit(){
-            done = true;
-        }
-        @Override
-        protected Void doInBackground(Void... params) {
-            while(!done){
-                GetHTTP g = new GetHTTP();
-                g.execute();
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                myData = dataBase.getString(p,"");
-                info.setText(myData);
-            }
-            return null;
-        }
     }
 
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
@@ -140,7 +100,20 @@ public class tempNode extends AppCompatActivity {
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
-                h.sendData(data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
+                info.setText(dataBase.getString(String.valueOf(finalNum),""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -185,38 +158,5 @@ public class tempNode extends AppCompatActivity {
         }
         return s;
     }
-
-    public class GetHTTP extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Log.d("tempNode", "In GetHTTP task");
-            String response = "";
-            try {
-                response = h.getData();
-                String[] packets = response.split(",");
-                for (String rep : packets) {
-                    if (rep.substring(0, 8).equals("00010000")) {
-                        Log.d("Get HTTP", "Found a connection table message.");
-                        dataBase.edit().putString("CONN_TABLE", rep).apply();
-                    }
-                    else if(rep.substring(0,8).equals("00010001")){
-                        Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8,16),2);
-                        String p = String.valueOf(koo);
-                        dataBase.edit().putString(p,rep.substring(16)).apply();
-                    }
-                }
-                Log.d("progress", "Got: " + response);
-            } catch (Exception e) {
-            }
-            this.publishProgress(response);
-            return null;
-        }
-        protected void onProgressUpdate(String... values) {
-            info.setText(dataBase.getString(p,""));
-        }
-    }
-
 }
 

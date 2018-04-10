@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -22,7 +24,11 @@ public class motorNode extends AppCompatActivity {
     String myData = "";
     String p;
     TextView info;
-    RefreshData r;
+    String response;
+    EditText dataToSend;
+    String bitDataToSend;
+    String setData;
+    int finalNum;
 
     public static String intToEightBit(int number) {
         String binaryString = "";
@@ -64,55 +70,52 @@ public class motorNode extends AppCompatActivity {
         h = new HttpAdapter();
 
         dataBase = getSharedPreferences("MeshData", Context.MODE_PRIVATE);
+        h = new HttpAdapter();
         int num = 0;
         String myData;
         num = getIntent().getIntExtra("WHICH_NODE", num);
         getData = "00000001" + intToEightBit(num) + "00000000000000000000000000000000000000000000000000000000";
-        GetHTTP g = new GetHTTP();
+
         p = String.valueOf(num);
-        myData = dataBase.getString(p,"");
-        if(myData.equals("")){
-            g.execute();
-        }
+        myData = dataBase.getString(p, "");
+
         TextView name = (TextView) findViewById(R.id.motornodeID);
         info = (TextView) findViewById(R.id.motornodeData);
-        Log.d("progress", "You want node: " + num);
+
+        Log.d("progress", "We are in node: " + num + "'s page");
+
+        dataToSend = findViewById(R.id.motorDataToSend);
+
+        finalNum = num;
 
         // Test Button
         Button send = findViewById(R.id.motorSend);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("progress", "Send Clicked");
+                bitDataToSend = intToEightBit(Integer.valueOf(dataToSend.getText().toString()));
+                setData = "00000010" + intToEightBit(finalNum) + bitDataToSend + "000000000000000000000000000000000000000000000000";
                 SendHTTP s = new SendHTTP();
-                s.execute("");                                                                      // ToDo add what to send
+                s.execute(setData);                                                             // ToDo add what to send
             }
         });
-        r = new RefreshData();
-        r.run();
+
+        ImageButton receive = findViewById(R.id.humReceive);
+        receive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("progress", "Recieve Clicked");
+                SendHTTP s = new SendHTTP();
+                s.execute(getData);
+            }
+        });
+        //r.run();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        r.interrupt();
         finish();
-    }
-
-    public class RefreshData extends Thread {
-        public void run() {
-            while (true) {
-                GetHTTP g = new GetHTTP();
-                g.execute();
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                myData = dataBase.getString(p, "");
-                info.setText(myData);
-            }
-        }
     }
 
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
@@ -123,7 +126,20 @@ public class motorNode extends AppCompatActivity {
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
-                h.sendData(data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
+                info.setText(dataBase.getString(String.valueOf(finalNum), ""));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -135,7 +151,7 @@ public class motorNode extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("progress", "In GetHTTP task");
+            Log.d("tempNode", "In GetHTTP task");
             String response = "";
             try {
                 response = h.getData();
@@ -144,11 +160,12 @@ public class motorNode extends AppCompatActivity {
                     if (rep.substring(0, 8).equals("00010000")) {
                         Log.d("Get HTTP", "Found a connection table message.");
                         dataBase.edit().putString("CONN_TABLE", rep).apply();
-                    } else if (rep.substring(0, 8).equals("00000000")) {
+                    }
+                    else if(rep.substring(0,8).equals("00010001")){
                         Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8, 16), 2);
+                        int koo = Integer.parseInt(rep.substring(8,16),2);
                         String p = String.valueOf(koo);
-                        dataBase.edit().putString(p, rep.substring(16)).apply();
+                        dataBase.edit().putString(p,rep.substring(16)).apply();
                     }
                 }
                 Log.d("progress", "Got: " + response);
@@ -157,10 +174,11 @@ public class motorNode extends AppCompatActivity {
             this.publishProgress(response);
             return null;
         }
-
         protected void onProgressUpdate(String... values) {
+            info.setText(dataBase.getString(p,""));
         }
     }
+
 
 }
 

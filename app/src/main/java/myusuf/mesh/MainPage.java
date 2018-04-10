@@ -15,13 +15,15 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.io.IOException;
 
 public class MainPage extends AppCompatActivity {
     SharedPreferences dataBase;
     HttpAdapter h;
-    String maint = "000000010000000011111111111111111111111111111111111111111111111111111111";
+    String maint = "000000100000000011111111111111111111111111111111111111111111111111111111";
+    String response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class MainPage extends AppCompatActivity {
 
 
         // Provisioning Button
-        Button provisioning = findViewById(R.id.goToProvisioning);
+        ImageButton provisioning = findViewById(R.id.goToProvisioning);
         provisioning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +49,7 @@ public class MainPage extends AppCompatActivity {
         });
 
         // Topology Button
-        final Button topology = findViewById(R.id.goToTopology);
+        final ImageButton topology = findViewById(R.id.goToTopology);
         topology.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +89,7 @@ public class MainPage extends AppCompatActivity {
         });
 
 
-        final Button maintenance = findViewById(R.id.doMaintenance);
+        final ImageButton maintenance = findViewById(R.id.doMaintenance);
         maintenance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +99,7 @@ public class MainPage extends AppCompatActivity {
             }
         });
 
-        Button reset = findViewById(R.id.resetSystem);
+        ImageButton reset = findViewById(R.id.resetSystem);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,6 +161,7 @@ public class MainPage extends AppCompatActivity {
         }
         return false;
     }
+
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
 
         @Override
@@ -167,7 +170,19 @@ public class MainPage extends AppCompatActivity {
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
-                h.sendData(data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -18,6 +18,14 @@
             />
     </FrameLayout>
 
+    <EditText
+        android:id="@+id/humDataToSend"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:layout_above="@+id/humSend"
+        android:layout_alignParentStart="true"
+        android:gravity="center"/>
+
     <Button
         android:id="@+id/humSend"
         android:layout_width="80dp"

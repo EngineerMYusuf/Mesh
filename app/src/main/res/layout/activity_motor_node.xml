@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="myusuf.mesh.motorNode">
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -15,8 +16,15 @@
             android:src="@drawable/matbackground"
             android:scaleType = "centerCrop"
             />
-
     </FrameLayout>
+
+    <EditText
+        android:id="@+id/motorDataToSend"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:layout_above="@+id/motorSend"
+        android:layout_alignParentStart="true"
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/motorSend"
@@ -28,16 +36,14 @@
         tools:layout_editor_absoluteX="200dp"
         tools:layout_editor_absoluteY="527dp" />
 
-
-    <Button
+    <ImageButton
         android:id="@+id/motorReceive"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/motorSend"
-        android:text="Receive"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="527dp" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/refreshsmall"
+        android:background="#0000"/>
 
     <TextView
         android:id="@+id/motornodeID"
@@ -59,27 +65,16 @@
         android:text="Nothing"/>
 
 
-    <TextView
-        android:id="@+id/motornodeType"
-        android:layout_width="match_parent"
-        android:layout_above="@+id/motornodeData"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/motornodeID"
-        android:text="Nothing"
-        android:textSize="50dp"
-        android:gravity="end"/>
-
     <ImageView
         android:id="@+id/motorIMG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/motornodeData"
-        android:layout_marginBottom="23dp"
-        android:layout_marginEnd="23dp"
-        android:layout_toStartOf="@+id/motornodeType"
+        android:layout_alignEnd="@+id/motornodeID"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="18dp"
         android:scaleX="2"
         android:scaleY="2"
-        app:srcCompat="@drawable/lime" />
+        app:srcCompat="@drawable/green" />
 
 </RelativeLayout>

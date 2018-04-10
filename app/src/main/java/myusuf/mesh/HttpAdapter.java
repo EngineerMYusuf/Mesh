@@ -15,9 +15,9 @@ public class HttpAdapter {
 
     }
 
-    void sendData(String data) throws IOException {
+    String sendData(String data) throws IOException {
         String url = "http://192.168.137.5/user.txt";
-
+        String result= "";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -40,6 +40,7 @@ public class HttpAdapter {
                         response.append(inputLine);
                     }
                 }
+                result = response.toString();
             } else if (responseCode == 420) {
                 Log.d("HTTP", "Empty Body Sent");
             } else {
@@ -49,7 +50,7 @@ public class HttpAdapter {
         } catch (Exception e) {
             Log.d("HTTP", "Exception: " + e + " in sendHTTP");
         }
-
+        return result;
 
     }
 
@@ -89,5 +90,6 @@ public class HttpAdapter {
 
         return "";
     }
+
 
 }

@@ -28,6 +28,7 @@ public class Registration extends AppCompatActivity {
     String lowE;
     int myLE;
     HttpAdapter h;
+    String response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class Registration extends AppCompatActivity {
                 myKn = dataBase.getInt("kn", 1);
                 myKn++;
                 dataBase.edit().putInt("kn", myKn).apply();
+                int id = Integer.parseInt(deviceNameInput.getText().toString());
                 Log.d("process", "kn is: " + dataBase.getInt("kn", 0));
 
                 deviceName = deviceNameInput.getText().toString();
@@ -82,7 +84,7 @@ public class Registration extends AppCompatActivity {
 
                 dataBase.edit().putString("lowEnergy", lowE).apply();
 
-                sendProvisioning(address, Integer.parseInt(deviceConn), myKn, myLE);
+                sendProvisioning(address, Integer.parseInt(deviceConn), id, myLE);
 
                 finish();
 
@@ -195,12 +197,11 @@ public class Registration extends AppCompatActivity {
 
     public void sendProvisioning(String address, int connTo, int id, int le) {
         String[] addressArr = address.split(":");
-        id = id - 1;
+
         String sum = addressArr[5] + addressArr[4] + addressArr[3] + addressArr[2] + addressArr[1] + addressArr[0];
 
         Log.d("provisioning", "Address: " + sum + "Connected to: " + connTo + "ID: " + id + "LE: " + le);
         String binAddress = getBinAddress(sum);
-        //String binConnto = intToFourBit(connTo);
         String binID = intToEightBit(id);
         String binLE;
         if(le == 0){
@@ -231,6 +232,34 @@ public class Registration extends AppCompatActivity {
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+/* Just in case Simple SendHTTP
+    public class SendHTTP extends AsyncTask<String, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                Log.d("progress", "In SendHTTP task");
+                String data = strings[0];
+                Log.d("progress", "Sending: " + data);
                 h.sendData(data);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -238,35 +267,5 @@ public class Registration extends AppCompatActivity {
             return null;
         }
     }
-
-    public class GetHTTP extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Log.d("progress", "In GetHTTP task");
-            String response = "";
-            try {
-                response = h.getData();
-                String[] packets = response.split(",");
-                for (String rep : packets) {
-                    if (rep.substring(0, 8).equals("00010000")) {
-                        Log.d("Get HTTP", "Found a connection table message.");
-                        dataBase.edit().putString("CONN_TABLE", rep).apply();
-                    }
-                    else if(rep.substring(0,8).equals("00000000")){
-                        Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8,16),2);
-                        String p = String.valueOf(koo);
-                        dataBase.edit().putString(p,rep.substring(16)).apply();
-                    }
-                }
-                Log.d("progress", "Got: " + response);
-            } catch (Exception e) {
-            }
-            this.publishProgress(response);
-            return null;
-        }
-        protected void onProgressUpdate(String... values) {
-        }
-    }
+*/
 }

@@ -66,6 +66,22 @@ public class MyCanvas extends View {
     }
 
     public float[][] getCoordinates() {
+        int orgX = this.getWidth() / 2;
+        int orgY = this.getHeight() / 2;
+        float xVal = 0;
+        float yVal = 0;
+        double radi = 0;
+        int bigRadius;
+        bigRadius = 300;
+        // Drawing circles
+        for (int i = 0; i < kn; i++) {
+            radi = toRadians(i * (360) / kn);
+            xVal = (float) cos(radi);
+            yVal = (float) sin(radi);
+            coordinates[i][0] = orgX + xVal * bigRadius;
+            coordinates[i][1] = orgY + yVal * bigRadius;
+            Log.d("drawing", "Drew at " + coordinates[i][0] + " : " + coordinates[i][1]);
+        }
         return coordinates;
     }
 
@@ -107,7 +123,7 @@ public class MyCanvas extends View {
     }
 
 
-
+/*
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -134,7 +150,7 @@ public class MyCanvas extends View {
         }
         return true;
     }
-
+*/
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -172,8 +188,8 @@ public class MyCanvas extends View {
         //Log.d("progress", "Drawing");
         canvas.drawCircle(orgX, orgY, bigRadius, paintLarge);
         // Drawing circles
-        for (int i = 0; i < 8; i++) {
-            radi = toRadians(i * (360) / 8);
+        for (int i = 0; i < kn; i++) {
+            radi = toRadians(i * (360) / kn);
             xVal = (float) cos(radi);
             yVal = (float) sin(radi);
             coordinates[i][0] = orgX + xVal * bigRadius;

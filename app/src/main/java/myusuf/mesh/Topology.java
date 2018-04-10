@@ -7,10 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import static java.lang.Thread.sleep;
 
 public class Topology extends AppCompatActivity {
     final String requestConnTable = "000000010000000000000000000000000000000000000000000000000000000000000000";
-
+    boolean some = false;
     HttpAdapter h;
     int kn;
     SharedPreferences dataBase;
@@ -28,8 +28,10 @@ public class Topology extends AppCompatActivity {
     String[] conn;
     MyCanvas paletV;
     String oldConnTable = "";
-    GetConnectionTable t;
-    //SendToNode pk;
+   // SendToNode pk;
+    String response;
+    float[][] coordinates;
+    boolean dataCame = false;
 
     public static String reverser(String s) {
         String reverse = "";
@@ -42,7 +44,7 @@ public class Topology extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //pk.quit();
+       // pk.quit();
         finish();
     }
 
@@ -56,6 +58,8 @@ public class Topology extends AppCompatActivity {
         setContentView(R.layout.activity_topology);
         super.onCreate(savedInstanceState);
         paletV = findViewById(R.id.pale);
+        //pk = new SendToNode();
+       // pk.execute();
 
         oldConnTable = dataBase.getString("CONN_TABLE", "");
 
@@ -65,30 +69,37 @@ public class Topology extends AppCompatActivity {
 
         paletV.setTypes(types);
 
-        Button getConnTable = findViewById(R.id.getConnTable);
-        getConnTable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("button", "You pressed get Table");
-                t = new GetConnectionTable();
-                t.execute();
-            }
-        });
-
         // Test Button
         ImageButton update = findViewById(R.id.updateTopology);
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //pk.quit();
                 Log.d("button", "You pressed update Topology");
+                dataCame = false;
+                SendHTTP s = new SendHTTP();
+                s.execute(requestConnTable);
+                oldConnTable = dataBase.getString("CONN_TABLE", oldConnTable);
                 drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
-                paletV.invalidate();
+                while (dataCame) {
+                    try {
+                        wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dataCame = false;/*
+                while(!(s.getStatus() == AsyncTask.Status.FINISHED)){
+                    Log.d("waiting","waiting for response");
+                }
+                Log.d("Canvas", "invalidating");
+                */
             }
         });
-        //pk = new SendToNode();
-       // pk.execute();
 
         paletV.setKn(kn);
+        oldConnTable = dataBase.getString("CONN_TABLE", oldConnTable);
+        drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
         paletV.invalidate();
 
     }
@@ -106,23 +117,16 @@ public class Topology extends AppCompatActivity {
                 Log.d("Connections", "Connections: " + conn[i]);
             }
             paletV.setConnections(conn);
-            //paletV.invalidate();
         }
     }
 
-    private void startNodesTop(int node, Class c) {
-        //pk.quit();
+    public void startNodesTop(int node, Class c) {
+       // pk.quit();
         paletV.setNodeTouched(0);
         Intent intent = new Intent(this, c);
         Log.d("startNodesTopology", c + " ," + node);
         intent.putExtra("WHICH_NODE", node);
         startActivity(intent);
-    }
-
-    public void sendToDraw(String s) {
-        if (!(s.equals(""))) {
-            drawConnections(s);
-        }
     }
 /*
     public class SendToNode extends AsyncTask<Void, Void, Void> {
@@ -132,9 +136,21 @@ public class Topology extends AppCompatActivity {
             done = true;
         }
 
+        public void start() {
+            done = false;
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
+
             while (!done) {
+
+                if(done){
+                    Log.d("SendToNode Status", "Im done");
+                }
+                else{
+                    Log.d("SendToNode Status", "Im continuing");
+                }
                 Log.d("checking if touched", "checking");
                 int k = paletV.getNodeTouched();
                 if (!(k == 0)) {
@@ -152,7 +168,7 @@ public class Topology extends AppCompatActivity {
                     }
                 }
                 try {
-                    sleep(1000);
+                    sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -162,81 +178,82 @@ public class Topology extends AppCompatActivity {
 
     }
 */
-    public class GetConnectionTable extends AsyncTask<Void, Void, Void> {                                                // ToDo Convert to AsyncTask
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        MyCanvas paletV = findViewById(R.id.pale);
+        float touchX;
+        float touchY;
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            SendHTTP s = new SendHTTP();
-            s.execute(requestConnTable);
-            Log.d("HTTP Send", "sent request for connection table");
-            try {
-                sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int kn = paletV.getKn();
+            coordinates = paletV.getCoordinates();
+            touchX = event.getX();
+            touchY = event.getY();
+
+            Log.d("touched", "Coordinates X: " + touchX + " Y: " + touchY);
+            boolean isItIn;
+            for (int i = 0; i < kn; i++) {
+                Log.d("The Node is in", String.valueOf(coordinates[i][0]) + ",,," + String.valueOf(coordinates[i][1]));
+                isItIn = ((touchX < coordinates[i][0] + 44) && (coordinates[i][0] - 44 < touchX)) &&
+                        ((touchY < coordinates[i][1] + 44) && (coordinates[i][1] - 44 < touchY));
+                if (isItIn) {
+                    Log.d("touched", "Touched");
+                    Log.d("types", dataBase.getString("types", ""));
+                    String[] type = dataBase.getString("types", "").split(",");
+                    String hn = type[i];
+                    Log.d("Topology", "The type you want is: " + hn);
+                    if (hn.equals("1")) {
+                        startNodesTop(i, tempNode.class);
+                    } else if (hn.equals("2")) {
+                        startNodesTop(i, humNode.class);
+                    } else if (hn.equals("3")) {
+                        startNodesTop(i, motorNode.class);
+                    }
+                }
             }
-            GetHTTP g = new GetHTTP();
-            g.execute();
-            //if (dataBase.getString("CONN_TABLE", "").length() != kn) {
-            //drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
-            //}
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            //paletV.invalidate();
-            return null;
         }
+        return true;
     }
 
     public class SendHTTP extends AsyncTask<String, Integer, Void> {
 
         @Override
+        protected void onPostExecute(Void result) {
+            paletV.invalidate();
+        }
+        @Override
         protected Void doInBackground(String... strings) {
             try {
+                dataCame = false;
                 Log.d("progress", "In SendHTTP task");
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
-                h.sendData(data);
+                response = h.sendData(data);
+                if (response.substring(0, 8).equals("00010000")) {
+                    Log.d("Get HTTP", "Found a connection table message: " + response);
+                    dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
+                } else if (response.substring(0, 8).equals("00010001")) {
+                    Log.d("Get HTTP", "Found an answer message.");
+                    int koo = Integer.parseInt(response.substring(8, 16), 2);
+                    String p = String.valueOf(koo);
+                    dataBase.edit().putString(p, response.substring(16)).apply();
+                    Log.d("HTTP response", "Saved at: " + p);
+                } else {
+                    Log.d("HTTP response", "I dont understand this: " + response);
+                }
+                oldConnTable = dataBase.getString("CONN_TABLE", oldConnTable);
+                drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
+                dataCame = true;
+                //publishProgress();
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-    }
 
-    public class GetHTTP extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Log.d("Topology", "In GetHTTP task");
-            String response = "";
-            try {
-                response = h.getData();
-                String[] packets = response.split(",");
-                for (String rep : packets) {
-                    if (rep.substring(0, 8).equals("00010000")) {
-                        Log.d("Get HTTP", "Found a connection table message.");
-                        dataBase.edit().putString("CONN_TABLE", rep.substring(8)).apply();
-                    } else if (rep.substring(0, 8).equals("00010001")) {
-                        Log.d("Get HTTP", "Found an answer message.");
-                        int koo = Integer.parseInt(rep.substring(8, 16), 2);
-                        String p = String.valueOf(koo);
-                        dataBase.edit().putString(p, rep.substring(16)).apply();
-                    }
-                }
-                Log.d("progress", "Got: " + response);
-                sendToDraw(dataBase.getString("CONN_TABLE", ""));
-                oldConnTable = dataBase.getString("CONN_TABLE","");
-            } catch (Exception e) {
-            }
-            this.publishProgress(response);
             return null;
         }
 
-        protected void onProgressUpdate(String... values) {
-            sendToDraw(dataBase.getString("CONN_TABLE", ""));
-
-        }
     }
 }

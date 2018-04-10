@@ -38,7 +38,6 @@
         app:srcCompat="@drawable/red" />
 
     <Button
-        android:onClick="SendOnClick"
         android:id="@+id/tempSend"
         android:layout_width="80dp"
         android:layout_height="40dp"
@@ -48,15 +47,14 @@
         tools:layout_editor_absoluteX="200dp"
         tools:layout_editor_absoluteY="527dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/tempReceive"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/tempSend"
-        android:text="Receive"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="527dp" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/refreshsmall"
+        android:background="#0000"/>
 
     <TextView
         android:id="@+id/tempnodeID"
