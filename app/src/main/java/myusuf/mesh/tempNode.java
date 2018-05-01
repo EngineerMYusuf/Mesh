@@ -56,7 +56,7 @@ public class tempNode extends AppCompatActivity {
         TextView name = (TextView) findViewById(R.id.tempnodeID);
         info = (TextView) findViewById(R.id.tempnodeData);
 
-        info.setText(dataBase.getString(p, "o"));
+        //info.setText(dataBase.getString(p, "o"));
         Log.d("progress", "You want node: " + num);
         finalNum = num;
 

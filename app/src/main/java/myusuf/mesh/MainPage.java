@@ -36,7 +36,6 @@ public class MainPage extends AppCompatActivity {
 
         dataBase = getSharedPreferences("MeshData", Context.MODE_PRIVATE);
 
-
         // Provisioning Button
         ImageButton provisioning = findViewById(R.id.goToProvisioning);
         provisioning.setOnClickListener(new View.OnClickListener() {
@@ -110,9 +109,6 @@ public class MainPage extends AppCompatActivity {
 
     public void launchActivity(Class c){
         Intent intent = new Intent(this, c);
-        if(c.equals(Topology.class)){
-
-        }
         startActivity(intent);
     }
 

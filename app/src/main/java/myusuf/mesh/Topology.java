@@ -20,7 +20,6 @@ import static java.lang.Thread.sleep;
 
 public class Topology extends AppCompatActivity {
     final String requestConnTable = "000000010000000000000000000000000000000000000000000000000000000000000000";
-    boolean some = false;
     HttpAdapter h;
     int kn;
     SharedPreferences dataBase;
@@ -28,7 +27,6 @@ public class Topology extends AppCompatActivity {
     String[] conn;
     MyCanvas paletV;
     String oldConnTable = "";
-   // SendToNode pk;
     String response;
     float[][] coordinates;
     boolean dataCame = false;
@@ -44,7 +42,6 @@ public class Topology extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-       // pk.quit();
         finish();
     }
 
@@ -58,8 +55,6 @@ public class Topology extends AppCompatActivity {
         setContentView(R.layout.activity_topology);
         super.onCreate(savedInstanceState);
         paletV = findViewById(R.id.pale);
-        //pk = new SendToNode();
-       // pk.execute();
 
         oldConnTable = dataBase.getString("CONN_TABLE", "");
 
@@ -88,12 +83,9 @@ public class Topology extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                dataCame = false;/*
-                while(!(s.getStatus() == AsyncTask.Status.FINISHED)){
-                    Log.d("waiting","waiting for response");
-                }
-                Log.d("Canvas", "invalidating");
-                */
+                dataCame = false;
+                //drawConnections("00001000" + "00101001" + "01010010" + "00100110" + "11000000" + "00010001" + "00110000" + "01000100");
+                //paletV.invalidate();
             }
         });
 
@@ -108,11 +100,12 @@ public class Topology extends AppCompatActivity {
         if (conntable.length() < 8) {
             return;
         }
-        if (!(kn == 0) && !(kn > 8)) {
+        if (!(kn == 0)) {
+            Log.d("kn Reporter","Kn is: " + kn);
             paletV.setKn(kn);
-            conn = new String[8];
-            for (int i = 0; i < 8; i++) {                                                           // Will be later changed to i < kn
-                conn[i] = conntable.substring(8 * i, 8 * i + 8);                                    //  Will be later changed to (kn * i * 2, kn * i * 2 + kn)
+            conn = new String[kn];
+            for (int i = 0; i < kn; i++) {                                                           // Will be later changed to i < kn
+                conn[i] = conntable.substring(kn * i, 8 * i + 8);                                    //  Will be later changed to (kn * i * 2, kn * i * 2 + kn)
                 conn[i] = reverser(conn[i]);
                 Log.d("Connections", "Connections: " + conn[i]);
             }
@@ -128,56 +121,6 @@ public class Topology extends AppCompatActivity {
         intent.putExtra("WHICH_NODE", node);
         startActivity(intent);
     }
-/*
-    public class SendToNode extends AsyncTask<Void, Void, Void> {
-        private boolean done = false;
-
-        public void quit() {
-            done = true;
-        }
-
-        public void start() {
-            done = false;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            while (!done) {
-
-                if(done){
-                    Log.d("SendToNode Status", "Im done");
-                }
-                else{
-                    Log.d("SendToNode Status", "Im continuing");
-                }
-                Log.d("checking if touched", "checking");
-                int k = paletV.getNodeTouched();
-                if (!(k == 0)) {
-                    Log.d("touched", "Touched");
-                    Log.d("types", dataBase.getString("types", ""));
-                    String[] type = dataBase.getString("types", "").split(",");
-                    String hn = type[k];
-                    Log.d("Topology", "The type you want is: " + hn);
-                    if (hn.equals("1")) {
-                        startNodesTop(k, tempNode.class);
-                    } else if (hn.equals("2")) {
-                        startNodesTop(k, humNode.class);
-                    } else if (hn.equals("3")) {
-                        startNodesTop(k, motorNode.class);
-                    }
-                }
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-    }
-*/
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -220,6 +163,8 @@ public class Topology extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            oldConnTable = dataBase.getString("CONN_TABLE", oldConnTable);
+            drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
             paletV.invalidate();
         }
         @Override
@@ -230,6 +175,7 @@ public class Topology extends AppCompatActivity {
                 String data = strings[0];
                 Log.d("progress", "Sending: " + data);
                 response = h.sendData(data);
+                Log.d("HTTP","Response: " + response);
                 if (response.substring(0, 8).equals("00010000")) {
                     Log.d("Get HTTP", "Found a connection table message: " + response);
                     dataBase.edit().putString("CONN_TABLE", response.substring(8)).apply();
@@ -242,10 +188,7 @@ public class Topology extends AppCompatActivity {
                 } else {
                     Log.d("HTTP response", "I dont understand this: " + response);
                 }
-                oldConnTable = dataBase.getString("CONN_TABLE", oldConnTable);
-                drawConnections(dataBase.getString("CONN_TABLE", oldConnTable));
                 dataCame = true;
-                //publishProgress();
 
 
             } catch (IOException e) {

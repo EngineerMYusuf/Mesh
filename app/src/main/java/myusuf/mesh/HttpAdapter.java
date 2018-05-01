@@ -16,7 +16,7 @@ public class HttpAdapter {
     }
 
     String sendData(String data) throws IOException {
-        String url = "http://192.168.137.5/user.txt";
+        String url = "http://192.168.137.241/user.txt";
         String result= "";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
